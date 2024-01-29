@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import bcrypt from 'bcrypt';
 import { format } from 'date-fns';
 import httpStatus from 'http-status';
@@ -6,7 +9,7 @@ import AppError from '../../errors/AppError';
 import config from '../../config';
 import { TLoginUser } from './auth.interface';
 import { createToken } from './auth.utils';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PasswordChangeHistory } from '../passwordHistory/password.model';
 import { PasswordChangeError } from '../../errors/PasswordChangeError';
 
@@ -132,7 +135,50 @@ const changePassword = async (
   return result;
 };
 
+const refreshToken = async (token: string) => {
+  // checking if the given token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload;
+
+  const { username, iat } = decoded;
+
+  // checking if the user is exist
+  const user = await User.isUserExistsByUserName(username);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+  }
+
+  if (
+    user.passwordChangedAt &&
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    email: user.email,
+    username: user.username,
+    iat: Math.floor(Date.now() / 1000), // Current timestamp
+    // You can also add 'exp' if your token requires an expiration time
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
 export const AuthServices = {
   loginUser,
   changePassword,
+  refreshToken,
 };

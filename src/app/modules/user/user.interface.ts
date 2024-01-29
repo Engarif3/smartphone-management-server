@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
+import { Types } from 'mongoose';
 import { Model } from 'mongoose';
 
 export interface TUser {
+  _id?: Types.ObjectId;
   username: string;
   email: string;
   password: string;
