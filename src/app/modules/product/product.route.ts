@@ -13,7 +13,7 @@ router.post(
   ProductControllers.createProduct,
 );
 
-router.get('/products', ProductControllers.getAllProducts);
+router.get('/products', auth(), ProductControllers.getAllProducts);
 
 router.get('/courses/:courseId', ProductControllers.getSingleProduct);
 

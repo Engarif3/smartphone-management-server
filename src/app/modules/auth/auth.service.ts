@@ -33,13 +33,14 @@ const loginUser = async (payload: TLoginUser) => {
     );
 
   const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + Math.floor(1 * (24 * 60 * 60 * 1000));
+  // const exp = iat + Math.floor(1 * (24 * 60 * 60 * 1000));
+
   const jwtPayload = {
     _id: userDetails?._id,
     email: userDetails?.email,
     username: user.username,
     iat,
-    exp,
+    // exp,
   };
 
   const accessToken = createToken(
@@ -137,44 +138,53 @@ const changePassword = async (
 
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  try {
+    const decoded = jwt.verify(
+      token,
+      config.jwt_refresh_secret as string,
+    ) as JwtPayload;
 
-  const { username, iat } = decoded;
+    const { username, iat } = decoded;
 
-  // checking if the user is exist
-  const user = await User.isUserExistsByUserName(username);
+    // checking if the user is exist
+    const user = await User.isUserExistsByUserName(username);
 
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    }
+
+    if (
+      user.passwordChangedAt &&
+      User.isJWTIssuedBeforePasswordChanged(
+        user.passwordChangedAt,
+        iat as number,
+      )
+    ) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
+    }
+
+    const jwtPayload = {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      iat: Math.floor(Date.now() / 1000), // Current timestamp
+      // You can also add 'exp' if your token requires an expiration time
+    };
+
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string,
+    );
+
+    return {
+      accessToken,
+    };
+  } catch (error) {
+    console.error('Error in token verification: ', error);
+    // Handle token expiration or other verification errors here
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Token expired or invalid');
   }
-
-  if (
-    user.passwordChangedAt &&
-    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
-  ) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
-  }
-
-  const jwtPayload = {
-    _id: user._id,
-    email: user.email,
-    username: user.username,
-    iat: Math.floor(Date.now() / 1000), // Current timestamp
-    // You can also add 'exp' if your token requires an expiration time
-  };
-
-  const accessToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
-  );
-
-  return {
-    accessToken,
-  };
 };
 
 export const AuthServices = {
