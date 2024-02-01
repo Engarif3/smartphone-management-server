@@ -12,7 +12,10 @@ const createProductIntoDB = async (courseData: TProduct) => {
 };
 
 const getAllProductsFromDB = async () => {
-  const result = await Product.find();
+  // sorting to show the latest product first
+  const result = await Product.find().sort({
+    createdAt: -1,
+  });
   return result;
 };
 const getSingleProductFromDB = async (id: string) => {
