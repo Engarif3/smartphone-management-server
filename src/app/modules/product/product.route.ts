@@ -15,7 +15,7 @@ router.post(
 
 router.get('/products', auth(), ProductControllers.getAllProducts);
 
-router.get('/courses/:courseId', ProductControllers.getSingleProduct);
+router.get('/product/:productId', ProductControllers.getSingleProduct);
 
 router.get('/course/best', ProductControllers.getBestProduct);
 // router.get('/courses', ProductControllers.getPaginatedAndFilteredProducts);
@@ -31,5 +31,7 @@ router.put(
 //   '/courses/:courseId/reviews',
 //   ProductControllers.getSingleProductWithReviews,
 // );
+
+router.delete('/product/:productId', ProductControllers.deleteProduct);
 
 export const ProductRoutes = router;

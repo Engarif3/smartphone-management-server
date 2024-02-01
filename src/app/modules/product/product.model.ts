@@ -1,4 +1,4 @@
-import { TProduct, TTags } from './product.interface';
+import { ProductModel, TProduct, TTags } from './product.interface';
 import { Schema, model } from 'mongoose';
 
 const tagsSchema = new Schema<TTags>({
@@ -12,7 +12,7 @@ const tagsSchema = new Schema<TTags>({
     default: false,
   },
 });
-const productSchema = new Schema<TProduct>(
+const productSchema = new Schema<TProduct, ProductModel>(
   {
     name: {
       type: String,
@@ -28,6 +28,10 @@ const productSchema = new Schema<TProduct>(
       required: true,
     },
     brand: {
+      type: String,
+      required: true,
+    },
+    model: {
       type: String,
       required: true,
     },
@@ -56,5 +60,15 @@ const productSchema = new Schema<TProduct>(
     timestamps: true,
   },
 );
+productSchema.statics.isProductExistsBy_id = async function (id: string) {
+  // here all are correct possibilities
+  // return await Product.findOne({ id }).select('+password');
+  // return await Product.findOne({ _id: id });
+  // const product = await this.findOne({ _id: id });
+  // const product = await this.findById({ _id: id });
+  const product = await Product.findById({ _id: id });
+  // return !!product; //to convert boolean
+  return product;
+};
 
-export const Product = model<TProduct>('product', productSchema);
+export const Product = model<TProduct, ProductModel>('product', productSchema);

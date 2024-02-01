@@ -1,41 +1,12 @@
-import { Types } from 'mongoose';
-// import { TReview } from '../review/review.interface';
-
-// export type TTags = {
-//   name: string;
-//   isDeleted: boolean;
-// };
-export type TDetails = {
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
-  description: string;
-};
-
-export type TCourse = {
-  title: string;
-  instructor: string;
-  categoryId: Types.ObjectId;
-  price: number;
-  tags: [TTags];
-  startDate: string;
-  endDate: string;
-  language: string;
-  provider: string;
-  durationInWeeks?: number;
-  details: TDetails;
-  // reviews?: TReview[];
-  averageRating: number;
-  reviewCount: number;
-  createdBy?: Types.ObjectId;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
+import { Model } from 'mongoose';
+//
 //=====================================
 export type TTags = {
   name: string;
   isDeleted: boolean;
 };
 export type TProduct = {
+  // _id?: Types.ObjectId;
   name: string;
   price: number;
   quantity: number;
@@ -49,3 +20,8 @@ export type TProduct = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export interface ProductModel extends Model<TProduct> {
+  // eslint-disable-next-line no-unused-vars
+  isProductExistsBy_id(id: string): Promise<TProduct>;
+}

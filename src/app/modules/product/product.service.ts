@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Product } from './product.model';
 import mongoose from 'mongoose';
-import { TProduct, TTags } from './product.interface';
+import { TProduct, TTags, ProductModel } from './product.interface';
 
 const createProductIntoDB = async (courseData: TProduct) => {
   const result = await Product.create(courseData);
@@ -272,6 +272,17 @@ const getPaginatedAndFilteredProductsFromDB = async (query: any) => {
     courses,
   };
 };
+
+const deleteProductFromDB = async (id: string) => {
+  if (await Product.isProductExistsBy_id(id)) {
+    // const result = await Product.findOneAndDelete({ _id: id });
+    const result = await Product.findByIdAndDelete({ _id: id });
+    return result;
+  } else {
+    throw new Error('User not found');
+  }
+};
+
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
@@ -279,4 +290,5 @@ export const ProductServices = {
   updateProductIntoDB,
   getBestProductFromDB,
   getPaginatedAndFilteredProductsFromDB,
+  deleteProductFromDB,
 };

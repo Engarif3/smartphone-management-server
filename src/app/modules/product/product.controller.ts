@@ -52,8 +52,8 @@ const getAllProducts = catchAsync(async (req, res) => {
 });
 
 const getSingleProduct = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  const result = await ProductServices.getSingleProductFromDB(courseId);
+  const { productId } = req.params;
+  const result = await ProductServices.getSingleProductFromDB(productId);
 
   res.status(200).json({
     success: true,
@@ -134,11 +134,24 @@ const getBestProduct = catchAsync(async (req, res) => {
 //   });
 // });
 
+// delete user
+const deleteProduct = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  await ProductServices.deleteProductFromDB(productId);
+
+  res.status(200).json({
+    success: true,
+    message: 'Product deleted successfully!',
+    data: null,
+  });
+});
+
 export const ProductControllers = {
   createProduct,
   getAllProducts,
   getSingleProduct,
   updateProduct,
   getBestProduct,
+  deleteProduct,
   // getPaginatedAndFilteredProducts,
 };
