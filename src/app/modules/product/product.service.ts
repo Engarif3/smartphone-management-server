@@ -81,11 +81,6 @@ const updateProductIntoDB = async (
       id,
       '-averageRating -reviewCount -reviews',
     )
-      .populate({
-        path: 'createdBy',
-        select:
-          '-passwordHistory -createdAt -updatedAt -passwordChangedAt -__v',
-      })
       .select('-__v')
       .session(session);
 

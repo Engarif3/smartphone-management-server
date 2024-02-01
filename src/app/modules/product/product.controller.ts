@@ -64,9 +64,9 @@ const getSingleProduct = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
+  const { productId } = req.params;
 
-  const result = await ProductServices.updateProductIntoDB(courseId, req.body);
+  const result = await ProductServices.updateProductIntoDB(productId, req.body);
 
   res.status(200).json({
     success: true,

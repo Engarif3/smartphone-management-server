@@ -21,7 +21,7 @@ router.get('/course/best', ProductControllers.getBestProduct);
 // router.get('/courses', ProductControllers.getPaginatedAndFilteredProducts);
 
 router.put(
-  '/courses/:courseId',
+  '/product/:productId',
   // auth(USER_ROLE.admin),
   // validateRequest(ProductValidation.updateProductValidationSchema),
   ProductControllers.updateProduct,
