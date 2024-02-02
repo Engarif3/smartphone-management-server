@@ -22,8 +22,8 @@ router.get('/course/best', ProductControllers.getBestProduct);
 
 router.put(
   '/product/:productId',
-  // auth(USER_ROLE.admin),
-  // validateRequest(ProductValidation.updateProductValidationSchema),
+  // auth(),
+  validateRequest(ProductValidation.productValidationSchema),
   ProductControllers.updateProduct,
 );
 

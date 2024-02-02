@@ -63,24 +63,7 @@ const updateProductIntoDB = async (
         { runValidators: true, session },
       );
     }
-
-    // if (details) {
-    //   await Product.findByIdAndUpdate(
-    //     id,
-    //     {
-    //       $set: {
-    //         'details.level': details.level,
-    //         'details.description': details.description,
-    //       },
-    //     },
-    //     { runValidators: true, session },
-    //   );
-    // }
-    // Use select to exclude specific fields
-    const updatedProduct = await Product.findById(
-      id,
-      '-averageRating -reviewCount -reviews',
-    )
+    const updatedProduct = await Product.findById(id)
       .select('-__v')
       .session(session);
 
